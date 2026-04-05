@@ -102,7 +102,7 @@ vim.g.have_nerd_font = false
 vim.o.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.o.relativenumber = true
+vim.o.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.o.mouse = 'a'
@@ -133,7 +133,7 @@ vim.o.signcolumn = 'yes'
 vim.o.updatetime = 250
 
 -- Decrease mapped sequence wait time
-vim.o.timeoutlen = 300
+--vim.o.timeoutlen = 300
 
 -- Configure how new splits should be opened
 vim.o.splitright = true
@@ -164,9 +164,10 @@ vim.o.scrolloff = 10
 -- See `:help 'confirm'`
 vim.o.confirm = true
 
+vim.o.colorcolumn = '81'
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
-
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
@@ -195,7 +196,7 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 --
 -- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
 -- or just use <C-\><C-n> to exit terminal mode
-vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+vim.keymap.set('t', '<C-j><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- TIP: Disable arrow keys in normal mode
 -- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
@@ -311,7 +312,7 @@ require('lazy').setup({
     ---@diagnostic disable-next-line: missing-fields
     opts = {
       -- delay between pressing a key and opening which-key (milliseconds)
-      delay = 0,
+      delay = 500,
       icons = { mappings = vim.g.have_nerd_font },
 
       -- Document existing key chains
@@ -429,12 +430,12 @@ require('lazy').setup({
 
           -- Jump to the implementation of the word under your cursor.
           -- Useful when your language has ways of declaring types without an actual implementation.
-          vim.keymap.set('n', 'gri', builtin.lsp_implementations, { buffer = buf, desc = '[G]oto [I]mplementation' })
+          vim.keymap.set('n', 'gi', builtin.lsp_implementations, { buffer = buf, desc = '[G]oto [I]mplementation' })
 
           -- Jump to the definition of the word under your cursor.
           -- This is where a variable was first declared, or where a function is defined, etc.
-          -- To jump back, press <C-t>.
-          vim.keymap.set('n', 'grd', builtin.lsp_definitions, { buffer = buf, desc = '[G]oto [D]efinition' })
+          -- To jump back, press <C-o>.
+          vim.keymap.set('n', 'gd', builtin.lsp_definitions, { buffer = buf, desc = '[G]oto [D]efinition' })
 
           -- Fuzzy find all the symbols in your current document.
           -- Symbols are things like variables, functions, types, etc.
@@ -444,10 +445,12 @@ require('lazy').setup({
           -- Similar to document symbols, except searches over your entire project.
           vim.keymap.set('n', 'gW', builtin.lsp_dynamic_workspace_symbols, { buffer = buf, desc = 'Open Workspace Symbols' })
 
-          -- Jump to the type of the word under your cursor.
+          -- Jump jo the type of the word under your cursor.
           -- Useful when you're not sure what type a variable is and you want to see
           -- the definition of its *type*, not where it was *defined*.
           vim.keymap.set('n', 'grt', builtin.lsp_type_definitions, { buffer = buf, desc = '[G]oto [T]ype Definition' })
+
+          vim.keymap.set('n', 'gh', ':LspClangdSwitchSourceHeader<CR><Up>', { buffer = buf, desc = 'Switch between source and header file' })
         end,
       })
 
@@ -600,7 +603,15 @@ require('lazy').setup({
       --  See `:help lsp-config` for information about keys and how to configure
       ---@type table<string, vim.lsp.Config>
       local servers = {
-        -- clangd = {},
+        clangd = {
+          'clangd',
+          '--background-index', -- Create a index in the background and store on disk
+          '--pch-storage=memory',
+          '--clang-tidy',
+          '--header-insertion=iwyu', -- Insert what you use. Insert header on autocomplete
+          '--header-insertion-decorators', -- Show a circle in the autocomplete list when a header will be inserted
+          '-j=12', -- Number of CPUs to use
+        },
         -- gopls = {},
         -- pyright = {},
         -- rust_analyzer = {},
@@ -913,7 +924,7 @@ require('lazy').setup({
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
   -- require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
+  require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommended keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
