@@ -165,7 +165,11 @@ vim.o.scrolloff = 10
 vim.o.confirm = true
 
 vim.o.colorcolumn = '81'
+vim.o.autoread = true
 
+vim.keymap.set('n', '<leader>c', '<cmd>Neotree toggle current reveal_force_cwd<cr>', { desc = 'Toggle Neotree in the current window and show cwd' })
+vim.keymap.set('n', '<leader>n', '<cmd>Neotree toggle show<cr>', { desc = 'Toggle Neotree view' })
+vim.keymap.set('n', '<leader>b', '<cmd>Neotree toggle show buffers right<cr>', { desc = 'Toggle showing open buffers' })
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 -- Clear highlights on search when pressing <Esc> in normal mode
@@ -450,7 +454,7 @@ require('lazy').setup({
           -- the definition of its *type*, not where it was *defined*.
           vim.keymap.set('n', 'grt', builtin.lsp_type_definitions, { buffer = buf, desc = '[G]oto [T]ype Definition' })
 
-          vim.keymap.set('n', 'gh', ':LspClangdSwitchSourceHeader<CR><Up>', { buffer = buf, desc = 'Switch between source and header file' })
+          vim.keymap.set('n', 'gh', '<cmd>LspClangdSwitchSourceHeader<CR><Up>', { buffer = buf, desc = 'Switch between source and header file' })
         end,
       })
 
