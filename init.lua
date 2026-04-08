@@ -287,9 +287,15 @@ require('lazy').setup({
       signs = {
         add = { text = '+' }, ---@diagnostic disable-line: missing-fields
         change = { text = '~' }, ---@diagnostic disable-line: missing-fields
-        delete = { text = '_' }, ---@diagnostic disable-line: missing-fields
+        delete = { text = '-' }, ---@diagnostic disable-line: missing-fields
         topdelete = { text = '‾' }, ---@diagnostic disable-line: missing-fields
         changedelete = { text = '~' }, ---@diagnostic disable-line: missing-fields
+      },
+      numhl = true,
+      word_diff = false,
+      current_line_blame = true,
+      current_line_blame_opts = {
+        delay = 500,
       },
     },
   },
@@ -609,12 +615,15 @@ require('lazy').setup({
       local servers = {
         clangd = {
           'clangd',
+          '--all-scopes-completion',
+          '--clang-tidy',
           '--background-index', -- Create a index in the background and store on disk
           '--pch-storage=memory',
-          '--clang-tidy',
-          '--header-insertion=iwyu', -- Insert what you use. Insert header on autocomplete
+          '--completion-style=bundled',
+          '--function-arg-placeholders=0',
+          '--header-insertion=never', -- Insert what you use. Insert header on autocomplete
           '--header-insertion-decorators', -- Show a circle in the autocomplete list when a header will be inserted
-          '-j=12', -- Number of CPUs to use
+          '-j=16', -- Number of CPUs to use
         },
         -- gopls = {},
         -- pyright = {},
@@ -929,7 +938,7 @@ require('lazy').setup({
   -- require 'kickstart.plugins.lint',
   -- require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
-  -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommended keymaps
+  require 'kickstart.plugins.gitsigns', -- adds gitsigns recommended keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
