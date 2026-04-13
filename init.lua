@@ -170,6 +170,10 @@ vim.o.autoread = true
 vim.keymap.set('n', '<leader>c', '<cmd>Neotree toggle current reveal_force_cwd<cr>', { desc = 'Toggle Neotree in the current window and show cwd' })
 vim.keymap.set('n', '<leader>n', '<cmd>Neotree toggle show<cr>', { desc = 'Toggle Neotree view' })
 vim.keymap.set('n', '<leader>b', '<cmd>Neotree toggle show buffers right<cr>', { desc = 'Toggle showing open buffers' })
+vim.keymap.set('n', '<leader>pa', '<cmd>!cd "%:p:h" && pre-commit run -a<cr>', { desc = 'Run [p]re-commit on [a]ll files' })
+
+vim.keymap.set('n', '<leader>pf', '<cmd>!cd "%:p:h" && pre-commit run --files "%:p"<cr>', { desc = 'Run [p]re-commit on current [f]ile' })
+vim.keymap.set({ 'n', 't' }, '<C-t>', '<cmd>Boterminal<cr>', { desc = 'Toggle Boterminal' })
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 -- Clear highlights on search when pressing <Esc> in normal mode
@@ -331,6 +335,7 @@ require('lazy').setup({
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } }, -- Enable gitsigns recommended keymaps first
         { 'gr', group = 'LSP Actions', mode = { 'n' } },
+        { '<leader>p', group = '[P]re-commit', mode = { 'n' } },
       },
     },
   },
@@ -620,7 +625,7 @@ require('lazy').setup({
           '--background-index', -- Create a index in the background and store on disk
           '--pch-storage=memory',
           '--completion-style=bundled',
-          '--function-arg-placeholders=0',
+          '--function-arg-placeholders=false',
           '--header-insertion=never', -- Insert what you use. Insert header on autocomplete
           '--header-insertion-decorators', -- Show a circle in the autocomplete list when a header will be inserted
           '-j=16', -- Number of CPUs to use
@@ -934,7 +939,7 @@ require('lazy').setup({
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
   -- require 'kickstart.plugins.debug',
-  -- require 'kickstart.plugins.indent_line',
+  require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
   -- require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
@@ -944,8 +949,8 @@ require('lazy').setup({
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
-  --
+  { import = 'custom.plugins' },
+
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
   -- In normal mode type `<space>sh` then write `lazy.nvim-plugin`
