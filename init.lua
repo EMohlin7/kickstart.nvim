@@ -174,6 +174,12 @@ vim.keymap.set('n', '<leader>pa', '<cmd>!cd "%:p:h" && pre-commit run -a<cr>', {
 
 vim.keymap.set('n', '<leader>pf', '<cmd>!cd "%:p:h" && pre-commit run --files "%:p"<cr>', { desc = 'Run [p]re-commit on current [f]ile' })
 vim.keymap.set({ 'n', 't' }, '<C-t>', '<cmd>Boterminal<cr>', { desc = 'Toggle Boterminal' })
+
+vim.keymap.set({ 'i', 't' }, '<C-h>', '<left>', {})
+vim.keymap.set({ 'i', 't' }, '<C-j>', '<down>', {})
+vim.keymap.set({ 'i', 't' }, '<C-k>', '<up>', {})
+vim.keymap.set({ 'i', 't' }, '<C-l>', '<right>', {})
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 -- Clear highlights on search when pressing <Esc> in normal mode
@@ -846,6 +852,7 @@ require('lazy').setup({
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       vim.cmd.colorscheme 'tokyonight-night'
+      vim.api.nvim_set_hl(0, 'MiniStatuslineFilename', { fg = '#000000', bg = '#FFFF90', bold = false })
     end,
   },
 
@@ -885,11 +892,9 @@ require('lazy').setup({
       -- set use_icons to true if you have a Nerd Font
       statusline.setup { use_icons = vim.g.have_nerd_font }
 
-      -- You can configure sections in the statusline by overriding their
-      -- default behavior. For example, here we set the section for
-      -- cursor location to LINE:COLUMN
+      -- Set the location section to line/endline
       ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function() return '%2l:%-2v' end
+      statusline.section_location = function() return '%l/%L' end
 
       -- ... and there is more!
       --  Check out: https://github.com/nvim-mini/mini.nvim
@@ -935,6 +940,40 @@ require('lazy').setup({
 
   -- NOTE: Next step on your Neovim journey: Add/Configure additional plugins for Kickstart
   --
+
+  {
+    'karb94/neoscroll.nvim',
+    config = function()
+      local neoscroll = require 'neoscroll'
+      neoscroll.setup {
+        mappings = { -- Keys to be mapped to their corresponding default scrolling animation
+          '<C-u>',
+          '<C-d>',
+          '<C-b>',
+          '<C-f>',
+          '<C-y>',
+          '<C-e>',
+          'zt',
+          'zz',
+          'zb',
+        },
+        hide_cursor = true, -- Hide cursor while scrolling
+        stop_eof = true, -- Stop at <EOF> when scrolling downwards
+        respect_scrolloff = false, -- Stop scrolling when the cursor reaches the scrolloff margin of the file
+        cursor_scrolls_alone = true, -- The cursor will keep on scrolling even if the window cannot scroll further
+        duration_multiplier = 1.0, -- Global duration multiplier
+        easing = 'linear', -- Default easing function
+        pre_hook = nil, -- Function to run before the scrolling animation starts
+        post_hook = nil, -- Function to run after the scrolling animation ends
+        performance_mode = false, -- Disable "Performance Mode" on all buffers.
+        ignored_events = { -- Events ignored while scrolling
+          'WinScrolled',
+          'CursorMoved',
+        },
+      }
+    end,
+  },
+
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
