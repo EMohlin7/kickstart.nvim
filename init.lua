@@ -170,9 +170,9 @@ vim.o.autoread = true
 vim.keymap.set('n', '<leader>c', '<cmd>Neotree toggle current reveal_force_cwd<cr>', { desc = 'Toggle Neotree in the current window and show cwd' })
 vim.keymap.set('n', '<leader>n', '<cmd>Neotree toggle show<cr>', { desc = 'Toggle Neotree view' })
 vim.keymap.set('n', '<leader>b', '<cmd>Neotree toggle show buffers right<cr>', { desc = 'Toggle showing open buffers' })
-vim.keymap.set('n', '<leader>pa', '<cmd>!cd "%:p:h" && pre-commit run -a<cr>', { desc = 'Run [p]re-commit on [a]ll files' })
+vim.keymap.set('n', '<leader>pa', '<cmd>wa<cr><cmd>!cd "%:p:h" && pre-commit run -a<cr>', { desc = 'Run [p]re-commit on [a]ll files' })
 
-vim.keymap.set('n', '<leader>pf', '<cmd>!cd "%:p:h" && pre-commit run --files "%:p"<cr>', { desc = 'Run [p]re-commit on current [f]ile' })
+vim.keymap.set('n', '<leader>pf', '<cmd>w<cr><cmd>!cd "%:p:h" && pre-commit run --files "%:p"<cr>', { desc = 'Run [p]re-commit on current [f]ile' })
 vim.keymap.set({ 'n', 't' }, '<C-t>', '<cmd>Boterminal<cr>', { desc = 'Toggle Boterminal' })
 
 vim.keymap.set({ 'i', 't' }, '<C-h>', '<left>', {})
@@ -555,6 +555,7 @@ require('lazy').setup({
       --    That is to say, every time a new file is opened that is associated with
       --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
       --    function will be executed to configure the current buffer
+      local enableHints = true
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
@@ -614,7 +615,11 @@ require('lazy').setup({
           --
           -- This may be unwanted, since they displace some of your code
           if client and client:supports_method('textDocument/inlayHint', event.buf) then
-            map('<leader>th', function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf }) end, '[T]oggle Inlay [H]ints')
+            vim.lsp.inlay_hint.enable(enableHints)
+            map('<leader>th', function()
+              enableHints = not enableHints
+              vim.lsp.inlay_hint.enable(enableHints)
+            end, '[T]oggle Inlay [H]ints')
           end
         end,
       })
@@ -625,16 +630,17 @@ require('lazy').setup({
       ---@type table<string, vim.lsp.Config>
       local servers = {
         clangd = {
-          'clangd',
-          '--all-scopes-completion',
-          '--clang-tidy',
-          '--background-index', -- Create a index in the background and store on disk
-          '--pch-storage=memory',
-          '--completion-style=bundled',
-          '--function-arg-placeholders=false',
-          '--header-insertion=never', -- Insert what you use. Insert header on autocomplete
-          '--header-insertion-decorators', -- Show a circle in the autocomplete list when a header will be inserted
-          '-j=32', -- Number of CPUs to use
+          cmd = {
+            'clangd',
+            '--all-scopes-completion',
+            '--clang-tidy',
+            '--background-index', -- Create an index in the background and store it on disk
+            '--pch-storage=memory',
+            '--completion-style=bundled',
+            '--header-insertion=iwyu', -- Insert what you use. Insert header on autocomplete
+            '--header-insertion-decorators', -- Show a circle in the autocomplete list when a header will be inserted
+            '-j=32',
+          },
         },
         -- gopls = {},
         -- pyright = {},
@@ -973,7 +979,35 @@ require('lazy').setup({
       }
     end,
   },
-
+  {
+    'chrisgrieser/nvim-rip-substitute',
+    cmd = 'RipSubstitute',
+    opts = {},
+    keys = {
+      {
+        '<leader>F',
+        function() require('rip-substitute').sub() end,
+        mode = { 'n', 'x' },
+        desc = ' rip substitute',
+      },
+    },
+    config = function()
+      require('rip-substitute').setup {
+        keymaps = {
+          abort = 'q',
+          confirmAndSubstituteInBuffer = '<CR>',
+          insertModeConfirmAndSubstituteInBuffer = '<C-CR>',
+          confirmAndSubstituteInCwd = '<C-r>',
+          prevSubstitutionInHistory = '<Up>',
+          nextSubstitutionInHistory = '<Down>',
+          toggleFixedStrings = '<C-f>', -- ripgrep's `--fixed-strings`
+          toggleIgnoreCase = '<C-c>', -- ripgrep's `--ignore-case`
+          openAtRegex101 = 'R',
+          showHelp = '?',
+        },
+      }
+    end,
+  },
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
