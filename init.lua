@@ -84,6 +84,8 @@ I hope you enjoy your Neovim journey,
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
 
+local darkMode = true
+
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
@@ -857,9 +859,11 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
-      vim.api.nvim_set_hl(0, 'MiniStatuslineFilename', { fg = '#000000', bg = '#FFFF90', bold = false })
     end,
+  },
+  {
+    'olimorris/onedarkpro.nvim',
+    priority = 1000, -- Ensure it loads first
   },
 
   -- Highlight todo, notes, etc in comments
@@ -1049,6 +1053,20 @@ require('lazy').setup({
     },
   },
 })
+
+-- Clear any existing autocmds in this group to avoid duplicates
+vim.api.nvim_create_augroup('MyColorOverrides', { clear = true })
+-- Create an autocmd that triggers after any colorscheme is applied
+vim.api.nvim_create_autocmd('ColorScheme', {
+  group = 'MyColorOverrides',
+  callback = function() vim.api.nvim_set_hl(0, 'MiniStatuslineFilename', { fg = '#000000', bg = '#FFFF90', bold = false }) end,
+})
+
+if darkMode then
+  vim.cmd.colorscheme 'tokyonight-night'
+else
+  vim.cmd.colorscheme 'onelight'
+end
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
