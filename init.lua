@@ -175,12 +175,20 @@ vim.keymap.set('n', '<leader>b', '<cmd>Neotree toggle show buffers right<cr>', {
 vim.keymap.set('n', '<leader>pa', '<cmd>wa<cr><cmd>!cd "%:p:h" && pre-commit run -a<cr>', { desc = 'Run [p]re-commit on [a]ll files' })
 
 vim.keymap.set('n', '<leader>pf', '<cmd>w<cr><cmd>!cd "%:p:h" && pre-commit run --files "%:p"<cr>', { desc = 'Run [p]re-commit on current [f]ile' })
-vim.keymap.set({ 'n', 't' }, '<C-t>', '<cmd>Boterminal<cr>', { desc = 'Toggle Boterminal' })
+vim.keymap.set({ 'n', 't', 'i' }, '<C-t>', '<cmd>Boterminal<cr>', { desc = 'Toggle Boterminal' })
 
 vim.keymap.set({ 'i', 't' }, '<C-h>', '<left>', {})
 vim.keymap.set({ 'i', 't' }, '<C-j>', '<down>', {})
 vim.keymap.set({ 'i', 't' }, '<C-k>', '<up>', {})
 vim.keymap.set({ 'i', 't' }, '<C-l>', '<right>', {})
+
+vim.keymap.set('i', '<C-i>', 'copilot#Accept("\\<CR>")', {
+  expr = true,
+  replace_keycodes = false,
+})
+vim.g.copilot_no_tab_map = true
+vim.keymap.set('i', '<C-d>', '<Plug>(copilot-dismiss)', {})
+vim.keymap.set('i', '<C-w>', '<Plug>(copilot-accept-word)', {})
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -212,7 +220,7 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 --
 -- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
 -- or just use <C-\><C-n> to exit terminal mode
-vim.keymap.set('t', '<C-j><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- TIP: Disable arrow keys in normal mode
 -- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
@@ -1012,6 +1020,20 @@ require('lazy').setup({
       }
     end,
   },
+  {
+    'github/copilot.vim',
+  },
+  --  {
+  --    'CopilotC-Nvim/CopilotChat.nvim',
+  --    dependencies = {
+  --      { 'nvim-lua/plenary.nvim', branch = 'master' },
+  --    },
+  --    build = 'make tiktoken',
+  --    opts = {
+  --      -- See Configuration section for options
+  --    },
+  --  },
+
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
