@@ -1023,6 +1023,9 @@ require('lazy').setup({
   {
     'github/copilot.vim',
   },
+  {
+    'folke/snacks.nvim',
+  },
   --  {
   --    'CopilotC-Nvim/CopilotChat.nvim',
   --    dependencies = {
