@@ -182,7 +182,7 @@ vim.keymap.set({ 'i', 't' }, '<C-j>', '<down>', {})
 vim.keymap.set({ 'i', 't' }, '<C-k>', '<up>', {})
 vim.keymap.set({ 'i', 't' }, '<C-l>', '<right>', {})
 
-vim.keymap.set('i', '<C-i>', 'copilot#Accept("\\<CR>")', {
+vim.keymap.set('i', '<C-c>', 'copilot#Accept("\\<CR>")', {
   expr = true,
   replace_keycodes = false,
 })
