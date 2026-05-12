@@ -643,6 +643,7 @@ require('lazy').setup({
           cmd = {
             'clangd',
             '--all-scopes-completion',
+            '--enable-config=1',
             '--clang-tidy',
             '--background-index', -- Create an index in the background and store it on disk
             '--pch-storage=memory',
@@ -650,6 +651,7 @@ require('lazy').setup({
             '--header-insertion=iwyu', -- Insert what you use. Insert header on autocomplete
             '--header-insertion-decorators', -- Show a circle in the autocomplete list when a header will be inserted
             '-j=32',
+            '--log=error',
           },
         },
         -- gopls = {},
