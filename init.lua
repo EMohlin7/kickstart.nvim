@@ -83,7 +83,35 @@ I hope you enjoy your Neovim journey,
 
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
+local function git_root_for(path)
+  path = vim.fs.dirname(path)
+  local git_dir = vim.fs.find('.git', { path = path, upward = true })[1]
+  if not git_dir then return nil end
+  return vim.fs.dirname(git_dir)
+end
 
+local function git_file_history()
+  local file = vim.api.nvim_buf_get_name(0)
+  if file == '' then
+    vim.notify('No file in current buffer', vim.log.levels.WARN)
+    return
+  end
+
+  local root = git_root_for(file)
+  if not root then
+    vim.notify('No git repo found for current file', vim.log.levels.WARN)
+    return
+  end
+
+  local rel = vim.fs.relpath(root, file)
+  require('telescope.builtin').git_bcommits {
+    cwd = root,
+    -- some Telescope setups only need cwd;
+    -- if needed, pass git_command/custom entry maker instead
+  }
+end
+
+-- vim.keymap.set('n', '<leader>fh', git_file_history, { desc = 'File history in nearest git repo' })
 local darkMode = true
 
 -- Set <space> as the leader key
@@ -440,7 +468,13 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
-      vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
+      vim.keymap.set(
+        'n',
+        '<leader>saf',
+        function() builtin.find_files { hidden = true, no_ignore = true, no_ignore_parent = true } end,
+        { desc = '[S]earch [A]ll [F]iles' }
+      )
+      vim.keymap.set('n', '<leader>sst', builtin.builtin, { desc = '[S]earch [S]elect [T]elescope' })
       vim.keymap.set({ 'n', 'v' }, '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
@@ -448,6 +482,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader>sc', builtin.commands, { desc = '[S]earch [C]ommands' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+      vim.keymap.set('n', '<leader>so', git_file_history, { desc = '[S]earch [O]pen file git commits' })
 
       -- This runs on LSP attach per buffer (see main LSP attach function in 'neovim/nvim-lspconfig' config for more info,
       -- it is better explained there). This allows easily switching between pickers if you prefer using something else!
