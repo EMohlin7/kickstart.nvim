@@ -1,6 +1,5 @@
 return {
   'nickjvandyke/opencode.nvim',
-  tag = 'v0.10.2',
   dependencies = {
     {
       -- `snacks.nvim` integration is recommended, but optional

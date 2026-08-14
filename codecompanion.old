@@ -1,0 +1,46 @@
+return {
+  'olimorris/codecompanion.nvim',
+  dependencies = {
+    'nvim-lua/plenary.nvim',
+    'nvim-treesitter/nvim-treesitter',
+  },
+  opts = {
+    -- NOTE: The log_level is in `opts.opts`
+    opts = {},
+    adapters = {
+      acp_copilot = function()
+        return require('codecompanion.adapters').extend('copilot', {
+          name = 'acp_copilot',
+          url = '127.0.0.1',
+          port = 3000,
+        })
+      end,
+    },
+    strategies = {
+      chat = {
+        adapter = 'copilot',
+      },
+      inline = {
+        adapter = 'copilot',
+      },
+    },
+    interactions = {
+      cli = {
+        agent = 'copilot',
+        agents = {
+          copilot = {
+            cmd = 'bash',
+            args = { '-lc', "copilot --interactive '/user show'" },
+            description = 'Copilot CLI',
+            provider = 'terminal',
+          },
+        },
+      },
+    },
+  },
+
+  config = function(_, opts)
+    require('codecompanion').setup(opts)
+    vim.keymap.set({ 'n', 'x' }, '<leader>oae', function() require('codecompanion').cli { prompt = true } end, { desc = 'Ask' })
+  end,
+}
